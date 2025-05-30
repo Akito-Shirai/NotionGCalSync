@@ -1,0 +1,4 @@
+.clasp.json
+
+# Ignore config file with private tokens and IDs
+config.gs
