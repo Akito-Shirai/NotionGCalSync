@@ -34,14 +34,29 @@ function syncNotionToGoogle() {
     const end = dateProp.end ? new Date(dateProp.end) : null;
     const eventId = prop.CalendarEventId?.rich_text?.[0]?.plain_text;
 
-    const lastEditedTime = new Date(p.LastEditedTime);
+    const lastEditedTime = new Date(p.last_edited_time);
     const lastSyncedTimeStr = prop.LastSyncedTime?.date?.start;
     const lastSyncedTime = lastSyncedTimeStr
       ? new Date(lastSyncedTimeStr)
       : null;
+    const logTime = `(lastEdited: ${lastEditedTime}, lastSynced: ${lastSyncedTime})`;
 
     // Skip if not updated
-    if (lastSyncedTime && lastEditedTime <= lastSyncedTime) return;
+    if (
+      lastSyncedTime &&
+      lastEditedTime.getTime() <= lastSyncedTime.getTime()
+    ) {
+      /*
+      logEntries.push([
+        now,
+        "Skipped",
+        title,
+        start,
+        end,
+        `No update needed ${logTime}`,
+      ]);*/
+      return;
+    }
 
     try {
       let event;
@@ -49,7 +64,7 @@ function syncNotionToGoogle() {
         event = calendar.getEventById(eventId);
         if (!event) throw new Error("Event not found");
         updateCalendarEvent(event, title, start, end);
-        logEntries.push([now, "Updated", title, start, end, ""]);
+        logEntries.push([now, "Updated", title, start, end, logTime]);
       } else {
         event = createCalendarEvent(calendar, title, start, end);
         logEntries.push([now, "Created", title, start, end, ""]);
