@@ -46,10 +46,13 @@ function cleanUpDeletedCalendarEvents(logEntries, now) {
   const notionEventIds = fetchNotionEventIds();
   // const calendar = CalendarApp.getDefaultCalendar();
   const calendar = CalendarApp.getCalendarById(TARGET_CALENDAR_ID);
+
+  const oneMonthAgo = new Date(now);
+  oneMonthAgo.setMonth(now.getMonth() - 1);
   const oneYearAhead = new Date();
   oneYearAhead.setFullYear(now.getFullYear() + 1);
 
-  const events = calendar.getEvents(now, oneYearAhead);
+  const events = calendar.getEvents(oneMonthAgo, oneYearAhead);
   events.forEach((event) => {
     const id = event.getId();
     if (!notionEventIds.includes(id)) {
